@@ -1,17 +1,16 @@
 const express = require('express');
 const mariadb = require('./database/mariadb');
 const router = express.Router();
-
 router.use(express.json());
-
 
 // POST: 새 사용자 추가
 router
-.route('/users')
+.route('/')
+
 .post((req, res) => {
-    const { username, email } = req.body;
-    const query = 'INSERT INTO users (username, email) VALUES (?, ?)';
-    mariadb.query(query, [username, email], (err, result) => {
+    const { id,name  } = req.body;
+    const query = "insert into users (id, name) VALUES (?, ?)";
+    mariadb.query(query, [id, name], (err, result) => {
       if (err) {
         res.status(400).json({ error: 'Error user' });
       } else {
@@ -21,23 +20,24 @@ router
   })
   
   // GET: 모든 사용자 조회
-    
   .get((req, res) => {
-    const query = 'SELECT * FROM users';
+    const query = "select * from users";
     mariadb.query(query, (err, results) => {
       if (err) {
         res.status(400).json({ error: 'Error users' });
       } else {
         res.status(200).json(results);
       }
-    });
+    })
   })
   
   // PUT: 사용자 수정 (ID로)
+  router
+  .route('/add/:id')
   .put((req, res) => {
     const { id, username, email } = req.body;
   
-    const query = 'UPDATE users SET username = ?, email = ? WHERE id = ?';
+    const query = 'update users set username = ?, email = ? WHERE id = ?';
     mariadb.query(query, [username, email, id], (err, result) => {
       if (err) {
         res.status(500).json({ message : 'Error user' });

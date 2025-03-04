@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mariadb = require("./database/mariadb");
 
-router.use(express.json())
+router.use(express.json());
 
 // -------------------- favorite 테이블 CRUD --------------------
 
@@ -67,3 +67,5 @@ router
     }
   });
 });
+
+module.exports = router

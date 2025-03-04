@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mariadb = require("./database/mariadb");
+router.use(express.json())
 
 // DB 연결
 mariadb.connect((err) => {
@@ -11,7 +12,6 @@ mariadb.connect((err) => {
   }
 });
 
-router.use(express.json())
 
 // -------------------- note 테이블 CRUD --------------------
 router
@@ -19,7 +19,9 @@ router
   .post((req, res) => {
     const { users_id, title, description, tag } = req.body;
     const query = "INSERT INTO notes (users_id, title, description, tag) VALUES (?, ?, ?, ?)";
-    mariadb.query(query, (err, results) => {
+    mariadb.query(query,
+      [users_id, title, description, tag],
+       (err, results) => {
       if (err) {
         res.status(400).send("노트 에러");
       }
@@ -41,7 +43,7 @@ router
       if (err) {
         res.status(400).send("DB err");
       }
-      if (!results.length) {
+      if (results.length == 0 ) {
         res.status(404).json({
           message: "노트가 하나도 없습니다!",
         });
@@ -56,7 +58,7 @@ router
     const { id, users_id, date, title, description, tag } = req.body;
 
     const query =
-      "insert into notes where id = ? users_id = ?,date = ?, title = ?, description = ?, tag = ? ";
+      "update notes set users_id = ? users_id = ?,date = ?, title = ?, description = ?, tag = ? ";
     mariadb.query(
       query,
       [id, users_id, date, title, description, tag],
@@ -67,7 +69,7 @@ router
           res.status(201).json({ message: "Note updated" });
         }
       }
-    );
+    )
   })
 
   // DELETE: 노트 삭제 (ID로)
@@ -91,7 +93,7 @@ router
   .route("/:id").get((req, res) => {
   let { id } = req.params;
   id = parseInt(id);
-  const query = `SELECT * FROM notes WHERE id = "${noteId}"`;
+  const query = 'SELECT * FROM notes WHERE id = "?"';
   mariadb.query(query, [id], (err, result) => {
     if (err) {
       res.status(404).json({ message: "Error note ID" });
@@ -100,8 +102,8 @@ router
     } else {
       res.status(200).json(result[0]);
     }
-  });
-});
+  })
+})
 
 
 module.exports = router
