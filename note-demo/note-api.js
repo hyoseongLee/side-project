@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const mariadb = require("./database/mariadb");
+const { StatusCodes } = require("http-status-codes");
+
 router.use(express.json())
 
 // DB 연결
